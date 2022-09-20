@@ -1,3 +1,4 @@
+//go:build !oss
 // +build !oss
 
 /*
@@ -97,15 +98,15 @@ func run() error {
 		glog.Info("audit file is empty")
 		return nil
 	}
-	var iterator int64 = 0
+	var iterator int64 = 0 //iterator = 0
 
 	iv := make([]byte, aes.BlockSize)
-	x.Check2(file.ReadAt(iv, iterator))
-	iterator = iterator + aes.BlockSize
+	x.Check2(file.ReadAt(iv, iterator)) //get iv from first 16 bytes
+	iterator = iterator + aes.BlockSize // iterator = 16
 
 	t := make([]byte, len(x.VerificationText))
 	x.Check2(file.ReadAt(t, iterator))
-	iterator = iterator + int64(len(x.VerificationText))
+	iterator = iterator + int64(len(x.VerificationText)) // iterator = 16 + len("hello world")
 
 	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(t, t)
@@ -119,7 +120,7 @@ func run() error {
 			break
 		}
 		x.Check2(file.ReadAt(iv[12:], iterator))
-		iterator = iterator + 4
+		iterator = iterator + 4 //iterator + 4
 
 		content := make([]byte, binary.BigEndian.Uint32(iv[12:]))
 		x.Check2(file.ReadAt(content, iterator))

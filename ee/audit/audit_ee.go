@@ -1,3 +1,4 @@
+//go:build !oss
 // +build !oss
 
 /*
@@ -64,6 +65,8 @@ type auditLogger struct {
 }
 
 func GetAuditConf(conf string) *x.LoggerConf {
+	fmt.Println("###################### Hello from GetAuditConf in audit_ee.go! ######################")
+	fmt.Println(conf)
 	if conf == "" || conf == worker.AuditDefaults {
 		return nil
 	}
@@ -87,6 +90,8 @@ func GetAuditConf(conf string) *x.LoggerConf {
 
 func readAuditEncKey(conf *z.SuperFlag) ([]byte, error) {
 	encFile := conf.GetPath("encrypt-file")
+	fmt.Println("############################################ Hello from readAuditEncKey in audit_ee.go! ######################")
+	fmt.Println(encFile)
 	if encFile == "" {
 		return nil, nil
 	}
