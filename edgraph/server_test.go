@@ -18,16 +18,16 @@ package edgraph
 
 import (
 	"context"
-	"github.com/dgraph-io/dgraph/schema"
-	"google.golang.org/grpc/metadata"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/dgraph-io/badger/v3"
 	"github.com/dgraph-io/dgo/v210/protos/api"
 	"github.com/dgraph-io/dgraph/chunker"
+	"github.com/dgraph-io/dgraph/schema"
 	"github.com/dgraph-io/dgraph/x"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/metadata"
 )
 
 func makeNquad(sub, pred string, val *api.Value) *api.NQuad {
@@ -134,9 +134,11 @@ func TestValidateKeys(t *testing.T) {
 func TestParseSchemaFromAlterOperation(t *testing.T) {
 	md := metadata.New(map[string]string{"namespace": "123"})
 	ctx := metadata.NewIncomingContext(context.Background(), md)
-	dir, err := ioutil.TempDir("", "storetest_")
+	dir, err := os.MkdirTemp("", "storetest_")
+	defer os.RemoveAll(dir)
 	x.Check(err)
 	ps, err := badger.OpenManaged(badger.DefaultOptions(dir))
+	defer ps.Close()
 	x.Check(err)
 	schema.Init(ps)
 
