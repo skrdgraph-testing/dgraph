@@ -30,6 +30,7 @@ import (
 	"github.com/dgraph-io/dgo/v210/protos/api"
 	"github.com/dgraph-io/dgraph/x"
 	"github.com/dgraph-io/ristretto/z"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -199,7 +200,8 @@ func run(conf *viper.Viper) {
 		dg = dgTmp
 	}
 
-	addOne := func(i int) error {
+
+	processOne := func(i int) error {
 		txnStart := time.Now() // Start time of transaction
 		cnt, err := process(dg, conf)
 		now := time.Now().UTC().Format(format)
@@ -218,7 +220,7 @@ func run(conf *viper.Viper) {
 	// Run things serially first, if conc > 1.
 	if conc > 1 {
 		for i := 0; i < conc; i++ {
-			err := addOne(0)
+			err := processOne(0)
 			x.Check(err)
 			num--
 		}
@@ -229,7 +231,7 @@ func run(conf *viper.Viper) {
 		defer wg.Done()
 		count := 0
 		for count < num {
-			if err := addOne(worker); err != nil {
+			if err := processOne(worker); err != nil {
 				now := time.Now().UTC().Format(format)
 				fmt.Printf("%-17s While trying to process counter: %v. Retrying...\n", now, err)
 				time.Sleep(time.Second)
