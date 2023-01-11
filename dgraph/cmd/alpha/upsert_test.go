@@ -2910,3 +2910,15 @@ upsert {
 	_, _, err = queryWithTs(queryInp{body: q2, typ: "application/dql"})
 	require.NoError(t, err)
 }
+
+func TestLargeStringValueWithIndex(t *testing.T) {
+	require.NoError(t, dropAll())
+
+	err := alterSchemaWithRetry(`name: string @index(exact) .`)
+	require.NoError(t, err)
+
+	bigVal := strings.Repeat("biggest value", 7000)
+	mu := fmt.Sprintf(`{ set { <0x01> <name> "%v" . } }`, bigVal)
+	err = runMutation(mu)
+	require.NoError(t, err)
+}
