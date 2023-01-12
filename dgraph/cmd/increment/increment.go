@@ -200,7 +200,6 @@ func run(conf *viper.Viper) {
 		dg = dgTmp
 	}
 
-
 	processOne := func(i int) error {
 		txnStart := time.Now() // Start time of transaction
 		cnt, err := process(dg, conf)
