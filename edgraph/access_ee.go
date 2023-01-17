@@ -195,7 +195,7 @@ func validateToken(jwtStr string) (*userData, error) {
 		return nil, errors.Errorf("userid in claims is not a string:%v", userId)
 	}
 
-	/*  
+	/*
 	 * Since, JSON numbers follow JavaScript's double-precision floating-point
 	 * format . . .
 	 * -- references: https://restfulapi.net/json-data-types/
@@ -253,6 +253,7 @@ func validateLoginRequest(request *api.LoginRequest) error {
 // getAccessJwt constructs an access jwt with the given user id, groupIds, namespace
 // and expiration TTL specified by worker.Config.AccessJwtTtl
 func getAccessJwt(userId string, groups []acl.Group, namespace uint64) (string, error) {
+	fmt.Printf("%+v", groups)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userid":    userId,
 		"groups":    acl.GetGroupIDs(groups),

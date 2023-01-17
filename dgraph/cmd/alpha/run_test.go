@@ -34,7 +34,6 @@ import (
 	"github.com/dgraph-io/dgo/v210"
 	"github.com/dgraph-io/dgo/v210/protos/api"
 	"github.com/dgraph-io/dgraph/dql"
-	"github.com/dgraph-io/dgraph/protos/pb"
 	"github.com/dgraph-io/dgraph/query"
 	"github.com/dgraph-io/dgraph/schema"
 	"github.com/dgraph-io/dgraph/testutil"
@@ -1715,15 +1714,15 @@ func (t *Token) refreshToken() error {
 func TestMain(m *testing.M) {
 	addr = "http://" + testutil.SockAddrHttp
 	// Increment lease, so that mutations work.
-	conn, err := grpc.Dial(testutil.SockAddrZero, grpc.WithInsecure())
-	if err != nil {
-		log.Fatal(err)
-	}
-	zc := pb.NewZeroClient(conn)
-	if _, err := zc.AssignIds(context.Background(),
-		&pb.Num{Val: 1e6, Type: pb.Num_UID}); err != nil {
-		log.Fatal(err)
-	}
+	// conn, err := grpc.Dial(testutil.SockAddrZero, grpc.WithInsecure())
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// zc := pb.NewZeroClient(conn)
+	// if _, err := zc.AssignIds(context.Background(),
+	// 	&pb.Num{Val: 1e6, Type: pb.Num_UID}); err != nil {
+	// 	log.Fatal(err)
+	// }
 	httpToken := testutil.GrootHttpLogin(addr + "/admin")
 	token = &Token{
 		token:   httpToken,

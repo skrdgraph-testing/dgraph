@@ -237,16 +237,18 @@ func mutationWithTs(inp mutationInp) (mutationResponse, error) {
 		params = append(params, "startTs="+strconv.FormatUint(inp.ts, 10))
 		params = append(params, "hash="+inp.hash)
 	}
+	fmt.Printf("startTs: %v\n", inp.ts)
 
 	var mr mutationResponse
 	if inp.commitNow {
 		params = append(params, "commitNow=true")
 	}
 	url := addr + "/mutate?" + strings.Join(params, "&")
-	_, body, resp, err := runWithRetriesForResp("POST", inp.typ, url, inp.body)
+	qr, body, resp, err := runWithRetriesForResp("POST", inp.typ, url, inp.body)
 	if err != nil {
 		return mr, err
 	}
+	fmt.Printf("qr: %+v\nbody: %+v\nresp: %+v", qr, body, resp)
 	mr.cost = resp.Header.Get(x.DgraphCostHeader)
 
 	var r res
@@ -297,6 +299,7 @@ func runWithRetries(method, contentType, url string, body string) (
 func runRequest(req *http.Request) (*x.QueryResWithData, []byte, *http.Response, error) {
 	client := &http.Client{}
 	req.Header.Set("X-Dgraph-AccessToken", token.getAccessJWTToken())
+	fmt.Printf("AccessToken: %v\n", token.getAccessJWTToken())
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, nil, resp, err
