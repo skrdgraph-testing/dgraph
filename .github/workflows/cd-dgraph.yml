@@ -35,9 +35,9 @@ jobs:
           ref: "master"
       - name: Make Alpha Init Restore Binary
         run: |
-          cd cloud/script/alpha-init-restore/
+          cd /home/runner/work/cloud/script/alpha-init-restore/
           go build
-          # restore binary location is cloud/script/alpha-init-restore/restore
+          # restore binary location is /home/runner/work/cloud/script/alpha-init-restore/restore
       - name: Obtain License
         run: |
           echo ${{ secrets.CLOUD_LICENSE }} > /tmp/license
@@ -48,7 +48,8 @@ jobs:
           # docker pull dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} # pull oss image DONT NEED THIS
           echo """
           FROM dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
-
+          COPY /home/runner/work/cloud/script/alpha-init-restore/restore /usr/local/bin/restore
+          RUN chmod +x /usr/local/bin/restore
           ADD /tmp/license /opt/dgraph/license
           """ > ./Dockerfile
           docker build -f Dockerfile -t gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} .
