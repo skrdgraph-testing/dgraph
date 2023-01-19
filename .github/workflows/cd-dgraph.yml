@@ -35,6 +35,8 @@ jobs:
           ref: "master"
       - name: Make Alpha Init Restore Binary
         run: |
+          pwd
+          ls
           cd cloud/script/alpha-init-restore/
           go build
           # restore binary location is cloud/script/alpha-init-restore/restore
