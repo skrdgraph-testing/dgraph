@@ -33,6 +33,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testSchema = "type Person { name: String }"
+
 func TestSnapshot(t *testing.T) {
 	snapshotTs := uint64(0)
 
@@ -98,6 +100,7 @@ func TestSnapshot(t *testing.T) {
 		})
 		require.NoError(t, err)
 	}
+	testutil.UpdateGQLSchema(t, testutil.SockAddrHttp, testSchema)
 	_ = waitForSnapshot(t, snapshotTs)
 
 	t.Logf("Starting alpha2.\n")
@@ -109,6 +112,8 @@ func TestSnapshot(t *testing.T) {
 		t.Fatalf("Error while getting a dgraph client: %v", err)
 	}
 	verifySnapshot(t, dg2, 400)
+	resp := testutil.GetGQLSchema(t, testutil.ContainerAddr("alpha2", 8080))
+	require.Equal(t, testSchema, resp)
 }
 
 func verifySnapshot(t *testing.T, dg *dgo.Dgraph, num int) {

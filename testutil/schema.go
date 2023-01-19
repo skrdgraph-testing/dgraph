@@ -17,8 +17,11 @@
 package testutil
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/dgraph-io/dgo/v210"
@@ -87,10 +90,11 @@ func GetInternalTypes(excludeAclTypes bool) string {
 // GetFullSchemaJSON returns a string representation of the JSON object returned by the full
 // schema{} query. It uses the user provided predicates and types along with the initial internal
 // schema to generate the string. Example response looks like:
-// 	{
-// 		"schema": [ ... ],
-// 		"types": [ ... ]
-// 	}
+
+//	{
+//		"schema": [ ... ],
+//		"types": [ ... ]
+//	}
 func GetFullSchemaJSON(opts SchemaOptions) string {
 	expectedPreds := GetInternalPreds(opts.ExcludeAclSchema)
 	if len(opts.UserPreds) > 0 {
@@ -112,12 +116,13 @@ func GetFullSchemaJSON(opts SchemaOptions) string {
 // GetFullSchemaHTTPResponse returns a string representation of the HTTP response returned by the
 // full schema{} query. It uses the user provided predicates and types along with the initial
 // internal schema to generate the string. Example response looks like:
-// 	{
-// 		"data": {
-// 			"schema": [ ... ],
-// 			"types": [ ... ]
-// 		}
-// 	}
+//
+//	{
+//		"data": {
+//			"schema": [ ... ],
+//			"types": [ ... ]
+//		}
+//	}
 func GetFullSchemaHTTPResponse(opts SchemaOptions) string {
 	return `{"data":` + GetFullSchemaJSON(opts) + `}`
 }
@@ -129,4 +134,45 @@ func VerifySchema(t *testing.T, dg *dgo.Dgraph, opts SchemaOptions) {
 	require.NoError(t, err)
 
 	CompareJSON(t, GetFullSchemaJSON(opts), string(resp.GetJson()))
+}
+
+func UpdateGQLSchema(t *testing.T, sockAddrHttp, schema string) {
+	query := `mutation updateGQLSchema($sch: String!) {
+		updateGQLSchema(input: { set: { schema: $sch }}) {
+			gqlSchema {
+				schema
+			}
+		}
+	}`
+	adminUrl := "http://" + sockAddrHttp + "/admin"
+
+	params := GraphQLParams{
+		Query: query,
+		Variables: map[string]interface{}{
+			"sch": schema,
+		},
+	}
+	b, err := json.Marshal(params)
+	require.NoError(t, err)
+	resp, err := http.Post(adminUrl, "application/json", bytes.NewBuffer(b))
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	var data interface{}
+	require.NoError(t, json.NewDecoder(resp.Body).Decode(&data))
+	// return JsonGet(data, "data", "updateGQLSchema", "gqlSchema", "schema").(string)
+}
+
+func GetGQLSchema(t *testing.T, sockAddrHttp string) string {
+	query := `{getGQLSchema {schema}}`
+	params := GraphQLParams{Query: query}
+	b, err := json.Marshal(params)
+	adminUrl := "http://" + sockAddrHttp + "/admin"
+	require.NoError(t, err)
+	resp, err := http.Post(adminUrl, "application/json", bytes.NewBuffer(b))
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	var data interface{}
+	require.NoError(t, json.NewDecoder(resp.Body).Decode(&data))
+	fmt.Println("data is ", data)
+	return JsonGet(data, "data", "getGQLSchema", "schema").(string)
 }
