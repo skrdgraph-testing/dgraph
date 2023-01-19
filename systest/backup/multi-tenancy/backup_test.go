@@ -105,7 +105,7 @@ func TestBackupMultiTenancy(t *testing.T) {
 	_ = runBackup(t, galaxyToken, 3, 1)
 	testutil.DropAll(t, dg)
 	sendRestoreRequest(t, alphaBackupDir, galaxyToken.AccessJwt)
-	testutil.WaitForRestore(t, dg)
+	testutil.WaitForRestore(t, dg, testutil.SockAddrHttp)
 
 	query := `{ q(func: has(movie)) { count(uid) } }`
 	expectedResponse := `{ "q": [{ "count": 5 }]}`
@@ -118,7 +118,7 @@ func TestBackupMultiTenancy(t *testing.T) {
 	_ = runBackup(t, galaxyToken, 6, 2)
 	testutil.DropAll(t, dg)
 	sendRestoreRequest(t, alphaBackupDir, galaxyToken.AccessJwt)
-	testutil.WaitForRestore(t, dg)
+	testutil.WaitForRestore(t, dg, testutil.SockAddrHttp)
 	query = `{ q(func: has(movie)) { count(uid) } }`
 	expectedResponse = `{ "q": [{ "count": 5 }]}`
 	testutil.VerifyQueryResponse(t, dg, query, expectedResponse)
