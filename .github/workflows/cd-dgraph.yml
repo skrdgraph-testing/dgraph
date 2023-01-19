@@ -33,8 +33,12 @@ jobs:
           repository: "dgraph-io/cloud"
           token: ${{ secrets.GH_TOKEN }}
           ref: "master"
+          path: "cloud"
       - name: Make Alpha Init Restore Binary
         run: |
+          pwd 
+          ls
+          ls /home/runner/work/
           cd /home/runner/work/cloud/script/alpha-init-restore/
           go build
           # restore binary location is /home/runner/work/cloud/script/alpha-init-restore/restore
