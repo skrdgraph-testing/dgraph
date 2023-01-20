@@ -22,7 +22,7 @@ jobs:
       - name: Set Dgraph Release Version
         run: |
           #!/bin/bash
-          GIT_BRANCH_NAME="release/v23.0.0.test004" # $(git rev-parse --abbrev-ref HEAD)
+          GIT_BRANCH_NAME="release/v22.0.0" # $(git rev-parse --abbrev-ref HEAD)
           if [[ "$GIT_BRANCH_NAME" == "release/v"* ]]; 
           then
             echo "this is a release branch"
