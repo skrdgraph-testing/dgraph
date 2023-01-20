@@ -1,7 +1,7 @@
-name: cd-dgraph
+name: cd-dgraph-cloud
 on: workflow_dispatch
 jobs:
-  dgraph-build-cloud:
+  dgraph-cloud:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -54,7 +54,7 @@ jobs:
           COPY license /opt/dgraph/license
           """ > ./Dockerfile
           docker build -f Dockerfile -t gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} .
-          docker tag gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} 670738750911.dkr.ecr.us-east-1.amazonaws.com/gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
+          docker tag gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1 # More information on this action can be found below in the 'AWS Credentials' section
         with:
@@ -65,4 +65,4 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Push Images to ECR
         run: |
-          docker push 670738750911.dkr.ecr.us-east-1.amazonaws.com/gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
