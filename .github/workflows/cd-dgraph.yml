@@ -50,7 +50,7 @@ jobs:
           FROM dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
           COPY cloud/script/alpha-init-restore/restore /usr/local/bin/restore
           RUN chmod +x /usr/local/bin/restore
-          ADD /tmp/license /opt/dgraph/license
+          COPY /tmp/license /opt/dgraph/license
           """ > ./Dockerfile
           docker build -f Dockerfile -t gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} .
       - name: Login to ECR
