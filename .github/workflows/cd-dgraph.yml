@@ -40,7 +40,8 @@ jobs:
           # restore binary location is /home/runner/work/dgraph/dgraph/script/alpha-init-restore/restore
       - name: Obtain License
         run: |
-          echo ${{ secrets.CLOUD_LICENSE }} > /tmp/license
+          touch license
+          echo ${{ secrets.CLOUD_LICENSE }} > license
           echo "license"
       - name: Make Dgraph Cloud Docker Image
         run: |
@@ -50,7 +51,7 @@ jobs:
           FROM dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
           COPY cloud/script/alpha-init-restore/restore /usr/local/bin/restore
           RUN chmod +x /usr/local/bin/restore
-          COPY /tmp/license /opt/dgraph/license
+          COPY license /opt/dgraph/license
           """ > ./Dockerfile
           docker build -f Dockerfile -t gaas/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} .
       - name: Login to ECR
