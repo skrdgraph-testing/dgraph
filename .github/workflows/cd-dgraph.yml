@@ -48,7 +48,7 @@ jobs:
           # docker pull dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }} # pull oss image DONT NEED THIS
           echo """
           FROM dgraph/dgraph:${{ env.DGRAPH_RELEASE_VERSION }}
-          COPY /home/runner/work/dgraph/dgraph/script/alpha-init-restore/restore /usr/local/bin/restore
+          COPY cloud/script/alpha-init-restore/restore /usr/local/bin/restore
           RUN chmod +x /usr/local/bin/restore
           ADD /tmp/license /opt/dgraph/license
           """ > ./Dockerfile
