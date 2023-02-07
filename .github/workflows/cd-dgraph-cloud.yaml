@@ -8,8 +8,8 @@ on:
         default: 'stage'
         type: choice
         options: 
-        - stage
-        - prod
+          - stage
+          - prod
 jobs:
   dgraph-cloud:
     environment: '${{ github.event.inputs.environment }}'
